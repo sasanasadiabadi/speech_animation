@@ -1,1 +1,3 @@
 # speech-animation
+implementin the following paper for comp541 course project at Koc university...
+<a deep learning approach for generalized speech animation>
