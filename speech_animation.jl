@@ -16,7 +16,7 @@ Ky = 2  # sliding window size of 5 at output sequence
 num_class = 41
 num_pca = 6
 
-path = "--path to data"
+path = "--path to raw data"
 
 #read data from path
 files = readdir(path)
