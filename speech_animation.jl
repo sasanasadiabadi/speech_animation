@@ -11,8 +11,8 @@ atype = gpu()>=0 ? KnetArray{Float32}:Array{Float32}
 batchsize = 10
 epochs = 10
 srand = 123
-Kx = 5  # sliding window of size 11 at input sequence
-Ky = 2  # sliding window size of 5 at output sequence
+Kx = 5  # sliding window of size (2Kx+1) at input sequence
+Ky = 2  # sliding window size of (2Ky+1) at output sequence
 num_class = 41
 num_pca = 6
 
