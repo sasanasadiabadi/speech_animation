@@ -24,35 +24,36 @@ files = readdir(path)
 Xtrn = Any[]
 ytrn = Any[]
 for k in files
-	dt = readdlm(joinpath(path,k), ',')
+    dt = readdlm(joinpath(path,k), ',')
     #dt = CSV.read("bbaf2n.csv")
-	# seperate input/output sequences
-	X = dt[1:41,:]
-	y = dt[42:end,:]
+    # seperate input/output sequences
+    X = dt[1:41,:]
+    y = dt[42:end,:]
+	
+    # pad data to input/output sequences
+    X = hcat(repmat(X[:,1],1,Kx),X,repmat(X[:,end],1,Kx))
+    y = hcat(repmat(y[:,1],1,Ky),y,repmat(y[:,end],1,Ky))
 
-	# pad data to input/output sequences
-	X = hcat(repmat(X[:,1],1,Kx),X,repmat(X[:,end],1,Kx))
-	y = hcat(repmat(y[:,1],1,Ky),y,repmat(y[:,end],1,Ky))
+    # create dataset using sliding window
+    for i=Kx+1:size(X,2)-Kx
+	tmp = X[:,i-Kx:i+Kx]
+	append!(Xtrn,[tmp])
+    end
 
-	# create dataset using sliding window
-	for i=Kx+1:size(X,2)-Kx
-		tmp = X[:,i-Kx:i+Kx]
-		append!(Xtrn,[tmp])
-	end
-
-	for j=Ky+1:size(y,2)-Ky
-		tmp = y[:,j-Ky:j+Ky]
-		append!(ytrn,[tmp])
-	end
+    for j=Ky+1:size(y,2)-Ky
+	tmp = y[:,j-Ky:j+Ky]
+	append!(ytrn,[tmp])
+    end
 end
+
 # flatten data
 N = size(Xtrn,1)
 X_train = zeros((2*Kx+1)*num_class,N)
 y_train = zeros((2*Ky+1)*num_pca,N)
 
 for i=1:N
-	X_train[:,i] = Xtrn[i][:]
-	y_train[:,i] = ytrn[i][:]
+    X_train[:,i] = Xtrn[i][:]
+    y_train[:,i] = ytrn[i][:]
 end
 
 println("train size",size(X_train))
@@ -71,13 +72,13 @@ end
 # predict ouput values
 function predict(w,x)
     # 3 feed forward dense layers
-	x1 = sigm.(w[1]*x .+ w[2])
-	x2 = sigm.(w[3]*x1 .+ w[4])
-	x3 = sigm.(w[5]*x2 .+ w[6])
+    x1 = sigm.(w[1]*x .+ w[2])
+    x2 = sigm.(w[3]*x1 .+ w[4])
+    x3 = sigm.(w[5]*x2 .+ w[6])
     # output regression layer
-	x4 = w[7]*x3 .+ w[8]
+    x4 = w[7]*x3 .+ w[8]
 
-	return x4
+    return x4
 end
 
 # initilize weight matrix
@@ -104,13 +105,14 @@ function train!(w, data,xtype)
     for (x,y) in data
 	x = convert(xtype,x)
         y = convert(xtype,y)
-        g = lossgradient(w,x,y)
-		g = map(xtype,g)
-		#opts = map(x->Sgd(), w)
-		opts = map(x->Adam(), w)
-        update!(w, g)
+        
+	g = lossgradient(w,x,y)
+	g = map(xtype,g)
+	#opts = map(x->Sgd(), w)
+	opts = map(x->Adam(), w)
+        update!(w, g, opts)
     end
-	return w
+    return w
 end
 
 # main function
