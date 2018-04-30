@@ -8,13 +8,13 @@ using CSV
 
 atype = gpu()>=0 ? KnetArray{Float32}:Array{Float32}
 
-batchsize = 10
-epochs = 10
+batchsize = 128
+epochs = 50
 srand = 123
 Kx = 5  # sliding window of size (2Kx+1) at input sequence
 Ky = 2  # sliding window size of (2Ky+1) at output sequence
 num_class = 41
-num_pca = 6
+num_pca = 16
 
 path = "--path to raw data"
 
@@ -81,7 +81,7 @@ function predict(w,x)
 end
 
 # initilize weight matrix
-function init_weight()
+function init_weight(xtype)
 	w = Any[]
 	push!(w,xavier(1024,451))
 	push!(w,zeros(1024,1))
@@ -91,7 +91,7 @@ function init_weight()
 	push!(w,zeros(1024,1))
 	push!(w,xavier(30,1024))
 	push!(w,zeros(30,1))
-	return map(atype,w)
+	return map(xtype,w)
 end
 
 # MSE loss
@@ -100,10 +100,12 @@ loss(w,x,y) = mean(abs2,y .- predict(w,x))
 lossgradient = grad(loss)
 
 # weight update
-function train!(w, data)
+function train!(w, data,xtype)
     for (x,y) in data
+	x = convert(xtype,x)
+        y = convert(xtype,y)
         g = lossgradient(w,x,y)
-		g = map(atype,g)
+		g = map(xtype,g)
 		#opts = map(x->Sgd(), w)
 		opts = map(x->Adam(), w)
         update!(w, g)
@@ -114,10 +116,10 @@ end
 # main function
 dtrn = mini_batch(X_train,y_train,batchsize)
 
-w = init_weight()
+w = init_weight(atype)
 
 for i=1:epochs
-    w = train!(w,dtrn)
+    w = train!(w,dtrn,atype)
     trnloss = 0
     count = 0 # counts number of batches
     for (x,y) in dtrn
