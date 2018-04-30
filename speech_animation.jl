@@ -1,10 +1,9 @@
 # speech animation
-for p in ("Knet","ArgParse","CSV")
+for p in ("Knet","ArgParse")
     Pkg.installed(p) == nothing && Pkg.add(p)
 end
 
 using Knet
-using CSV
 
 atype = gpu()>=0 ? KnetArray{Float32}:Array{Float32}
 
@@ -25,7 +24,7 @@ Xtrn = Any[]
 ytrn = Any[]
 for k in files
     dt = readdlm(joinpath(path,k), ',')
-    #dt = CSV.read("bbaf2n.csv")
+	
     # seperate input/output sequences
     X = dt[1:41,:]
     y = dt[42:end,:]
@@ -72,7 +71,7 @@ end
 # predict ouput values
 function predict(w,x)
     # 3 feed forward dense layers
-    x1 = sigm.(w[1]*x .+ w[2])
+    x1 = sigm.(w[1]*x  .+ w[2])
     x2 = sigm.(w[3]*x1 .+ w[4])
     x3 = sigm.(w[5]*x2 .+ w[6])
     # output regression layer
@@ -90,8 +89,8 @@ function init_weight(xtype)
 	push!(w,zeros(1024,1))
 	push!(w,xavier(1024,1024))
 	push!(w,zeros(1024,1))
-	push!(w,xavier(30,1024))
-	push!(w,zeros(30,1))
+	push!(w,xavier(80,1024))
+	push!(w,zeros(80,1))
 	return map(xtype,w)
 end
 
