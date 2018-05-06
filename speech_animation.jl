@@ -95,7 +95,11 @@ function init_weight(xtype)
 end
 
 # MSE loss
-loss(w,x,y) = mean(abs2,y .- predict(w,x))
+function func_loss(w,x,y)
+    yp = convert(Array{Float32}, predict(w,x))
+    loss = mean(abs2,y .- yp)
+    return loss
+end
 
 lossgradient = grad(loss)
 
@@ -103,8 +107,6 @@ lossgradient = grad(loss)
 function train!(w, data,xtype)
     for (x,y) in data
 	x = convert(xtype,x)
-        y = convert(xtype,y)
-        
 	g = lossgradient(w,x,y)
 	g = map(xtype,g)
 	#opts = map(x->Sgd(), w)
@@ -124,6 +126,7 @@ for i=1:epochs
     trnloss = 0
     count = 0 # counts number of batches
     for (x,y) in dtrn
+	x = convert(atype,x)
         trnloss += loss(w,x,y)
         count += 1
     end
