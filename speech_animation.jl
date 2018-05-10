@@ -75,6 +75,8 @@ end
 
 X_train, y_train = make_data(mode)
 
+println("train size",size(X_train))
+println("label size",size(y_train))
 
 # minibatch data
 function mini_batch(X, Y, bs)
