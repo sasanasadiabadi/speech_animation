@@ -7,8 +7,16 @@ the project is implemented on GRID dataset available at http://spandh.dcs.shef.a
 
 ## Data collection
 - Used OpenCV and Dlib to extract landmark points on lower face 
+- Filter out position, scale and rotational effect (shape alignment)
+    - General Procrustes Analysis
+    
+- shape alignment: ![](Results/alignment.png)
+
+- Shape model
+    - apply PCA on shape data 
+   
+- ![](Results/shapemodel.png)
 
 
-- ![](Results/alignment.png)
 
 
