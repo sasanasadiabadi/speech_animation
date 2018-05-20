@@ -9,6 +9,6 @@ the project is implemented on GRID dataset available at http://spandh.dcs.shef.a
 - Used OpenCV and Dlib to extract landmark points on lower face 
 
 
-- ![](results/alignment.png)
+- ![](Results/alignment.png)
 
 
