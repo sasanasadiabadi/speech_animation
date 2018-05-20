@@ -17,6 +17,6 @@ the project is implemented on GRID dataset available at http://spandh.dcs.shef.a
    
 - ![](Results/shapemodel.png)
 
-
+- training data preperation (sliding widow) ![](Results/datasetprep.png)
 
 
